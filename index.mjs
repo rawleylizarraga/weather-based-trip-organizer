@@ -37,3 +37,50 @@ app.get("/dbTest", async (req, res) => {
 app.listen(3000, () => {
     console.log("Express server running")
 })
+
+
+// CRUD helper functions
+
+// add new user to database
+// returns new userId
+async function addUser(username, password, picture, tempUnit) {
+
+    let params = [username, password, picture, tempUnit];
+    let sql = `
+        INSERT INTO users
+        (username, password, profile_picture_path, temp_unit)
+        VALUES (?, ?, ?, ?)`;
+
+    const [result] = await pool.query(sql, params);
+    return result.insertId;
+}
+
+// add new favorite day to database
+// if there is no state_name, then pass NULL into the function
+// returns new day_id
+async function addFavDay(user_id, country_name, state_name, city_name, longitude, latitude, weather_data, day_date) {
+    let validState = state_name ?? "";
+
+    let params = [user_id, country_name, validState, city_name, longitude, latitude, weather_data, day_date];
+    let sql = `
+        INSERT INTO favorite_days
+        (user_id, country_name, state_name, city_name, longitude, latitude, weather_data, day_date)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+
+    const [result] = await pool.query(sql, params);
+    return result.insertId;
+}
+
+// add new note to database
+// returns new note_id
+async function addNote(day_id, note_text, icon_path, note_title) {
+
+    let params = [day_id, note_text, icon_path, note_title];
+    let sql = `
+        INSERT INTO notes
+        (day_id, note_text, icon_path, note_title)
+        VALUES (?, ?, ?, ?)`;
+
+    const [result] = await pool.query(sql, params);
+    return result.insertId;
+}
