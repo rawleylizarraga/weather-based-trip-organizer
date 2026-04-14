@@ -39,7 +39,7 @@ app.listen(3000, () => {
 })
 
 
-// CRUD helper functions
+// CRUD HELPER FUNCTIONS
 
 // INSERT HELPERS
 
@@ -58,7 +58,7 @@ async function addUser(username, password, picture, tempUnit) {
 }
 
 // add new favorite day to database
-// if there is no state_name, then pass NULL into the function
+// if there is no state_name, then pass NULL into the function, the helper deals with it
 // returns new day_id
 async function addFavDay(user_id, country_name, state_name, city_name, longitude, latitude, weather_data, day_date) {
     let validState = state_name ?? "";
