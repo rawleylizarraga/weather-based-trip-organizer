@@ -41,6 +41,8 @@ app.listen(3000, () => {
 
 // CRUD helper functions
 
+// INSERT HELPERS
+
 // add new user to database
 // returns new userId
 async function addUser(username, password, picture, tempUnit) {
@@ -83,4 +85,37 @@ async function addNote(day_id, note_text, icon_path, note_title) {
 
     const [result] = await pool.query(sql, params);
     return result.insertId;
+}
+
+// UPDATE HELPERS
+
+// update user preferences
+// returns true if it affects any rows (should be 1), false if not
+async function updateUserPrefs(profile_picture_path, temp_unit, user_id) {
+    let sql = `
+        UPDATE users
+        SET profile_picture_path= ?,
+            temp_unit = ?
+        WHERE user_id = ?`;
+
+    let params = [profile_picture_path, temp_unit, user_id];
+
+    const [result] = await pool.query(sql, params);
+    return result.affectedRows > 0;
+}
+
+// update note
+// returns true if it affects any rows (should be 1), false if not
+async function updateNote(note_text, icon_path, note_title, note_id) {
+    let sql = `
+        UPDATE notes
+        SET note_text= ?,
+            icon_path = ?,
+            note_title = ?
+        WHERE note_id = ?`;
+
+    let params = [note_text, icon_path, note_title, note_id];
+
+    const [result] = await pool.query(sql, params);
+    return result.affectedRows > 0;
 }
