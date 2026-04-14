@@ -119,3 +119,29 @@ async function updateNote(note_text, icon_path, note_title, note_id) {
     const [result] = await pool.query(sql, params);
     return result.affectedRows > 0;
 }
+
+// DELETE HELPERS
+
+// delete favorite day
+// returns true if it affects any rows (should be 1), false if not
+async function deleteFavDay(day_id) {
+    let sql = `
+        DELETE
+        FROM favorite_days
+        WHERE day_id = ?`;
+
+    const [result] = await pool.query(sql, [day_id]);
+    return result.affectedRows > 0;
+}
+
+// delete note
+// returns true if it affects any rows (should be 1), false if not
+async function deleteNote(note_id) {
+    let sql = `
+        DELETE
+        FROM notes
+        WHERE note_id = ?`;
+
+    const [result] = await pool.query(sql, [note_id]);
+    return result.affectedRows > 0;
+}
