@@ -145,3 +145,89 @@ async function deleteNote(note_id) {
     const [result] = await pool.query(sql, [note_id]);
     return result.affectedRows > 0;
 }
+
+// SELECT HELPERS
+
+// select user from users
+// returns user_id's row data
+async function getUserById(user_id) {
+    const sql = `
+        SELECT *
+        FROM users
+        WHERE user_id = ?`;
+
+    const [rows] = await pool.query(sql, [user_id]);
+    return rows[0] || null;
+}
+
+// select user from users
+// returns username's row data
+async function getUserByUsername(username) {
+    const sql = `
+        SELECT *
+        FROM users
+        WHERE username = ?`;
+
+    const [rows] = await pool.query(sql, [username]);
+    return rows[0] || null;
+}
+
+// select day from favorite_days
+// returns day_id's row data
+async function getDay(day_id) {
+    const sql = `
+        SELECT *
+        FROM favorite_days
+        WHERE day_id = ?`;
+
+    const [rows] = await pool.query(sql, [day_id]);
+    return rows[0] || null;
+}
+
+// select all days for a user
+// returns array of rows containing all days
+async function getFavDaysByUserId(user_id) {
+    const sql = `
+        SELECT *
+        FROM favorite_days
+        WHERE user_id = ?
+        ORDER BY day_date DESC`;
+
+    const [rows] = await pool.query(sql, [user_id]);
+    return rows;
+}
+
+// select day and all of its notes
+// returns the notes nested as an array within the day's data
+async function getDayWithNotes(day_id) {
+    const day = await getDay(day_id);
+    if (!day) return null;
+
+    const notes = await getNotesByDay(day_id);
+
+    return { ...day, notes };
+}
+
+// select note from notes
+// returns note_id's row data
+async function getNote(note_id) {
+    const sql = `
+        SELECT *
+        FROM notes
+        WHERE note_id = ?`;
+
+    const [rows] = await pool.query(sql, [note_id]);
+    return rows[0] || null;
+}
+
+// select all notes for a day
+// returns array of rows containing all notes
+async function getNotesByDay(day_id) {
+    const sql = `
+        SELECT *
+        FROM notes
+        WHERE day_id = ?`;
+
+    const [rows] = await pool.query(sql, [day_id]);
+    return rows;
+}
