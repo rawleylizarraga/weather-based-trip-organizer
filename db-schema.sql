@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS `notes` (
   CONSTRAINT `fk_notes_day`
     FOREIGN KEY (`day_id`)
     REFERENCES `favorite_days` (`day_id`)
-    ON DELETE NO ACTION
+    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 

@@ -37,3 +37,197 @@ app.get("/dbTest", async (req, res) => {
 app.listen(3000, () => {
     console.log("Express server running")
 })
+
+
+// CRUD HELPER FUNCTIONS
+
+// INSERT HELPERS
+
+// add new user to database
+// returns new userId
+async function addUser(username, password, picture, tempUnit) {
+
+    let params = [username, password, picture, tempUnit];
+    let sql = `
+        INSERT INTO users
+        (username, password, profile_picture_path, temp_unit)
+        VALUES (?, ?, ?, ?)`;
+
+    const [result] = await pool.query(sql, params);
+    return result.insertId;
+}
+
+// add new favorite day to database
+// if there is no state_name, then pass NULL into the function, the helper deals with it
+// returns new day_id
+async function addFavDay(user_id, country_name, state_name, city_name, longitude, latitude, weather_data, day_date) {
+    let validState = state_name ?? "";
+
+    let params = [user_id, country_name, validState, city_name, longitude, latitude, weather_data, day_date];
+    let sql = `
+        INSERT INTO favorite_days
+        (user_id, country_name, state_name, city_name, longitude, latitude, weather_data, day_date)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+
+    const [result] = await pool.query(sql, params);
+    return result.insertId;
+}
+
+// add new note to database
+// returns new note_id
+async function addNote(day_id, note_text, icon_path, note_title) {
+
+    let params = [day_id, note_text, icon_path, note_title];
+    let sql = `
+        INSERT INTO notes
+        (day_id, note_text, icon_path, note_title)
+        VALUES (?, ?, ?, ?)`;
+
+    const [result] = await pool.query(sql, params);
+    return result.insertId;
+}
+
+// UPDATE HELPERS
+
+// update user preferences
+// returns true if it affects any rows (should be 1), false if not
+async function updateUserPrefs(profile_picture_path, temp_unit, user_id) {
+    let sql = `
+        UPDATE users
+        SET profile_picture_path= ?,
+            temp_unit = ?
+        WHERE user_id = ?`;
+
+    let params = [profile_picture_path, temp_unit, user_id];
+
+    const [result] = await pool.query(sql, params);
+    return result.affectedRows > 0;
+}
+
+// update note
+// returns true if it affects any rows (should be 1), false if not
+async function updateNote(note_text, icon_path, note_title, note_id) {
+    let sql = `
+        UPDATE notes
+        SET note_text= ?,
+            icon_path = ?,
+            note_title = ?
+        WHERE note_id = ?`;
+
+    let params = [note_text, icon_path, note_title, note_id];
+
+    const [result] = await pool.query(sql, params);
+    return result.affectedRows > 0;
+}
+
+// DELETE HELPERS
+
+// delete favorite day
+// returns true if it affects any rows (should be 1), false if not
+async function deleteFavDay(day_id) {
+    let sql = `
+        DELETE
+        FROM favorite_days
+        WHERE day_id = ?`;
+
+    const [result] = await pool.query(sql, [day_id]);
+    return result.affectedRows > 0;
+}
+
+// delete note
+// returns true if it affects any rows (should be 1), false if not
+async function deleteNote(note_id) {
+    let sql = `
+        DELETE
+        FROM notes
+        WHERE note_id = ?`;
+
+    const [result] = await pool.query(sql, [note_id]);
+    return result.affectedRows > 0;
+}
+
+// SELECT HELPERS
+
+// select user from users
+// returns user_id's row data
+async function getUserById(user_id) {
+    const sql = `
+        SELECT *
+        FROM users
+        WHERE user_id = ?`;
+
+    const [rows] = await pool.query(sql, [user_id]);
+    return rows[0] || null;
+}
+
+// select user from users
+// returns username's row data
+async function getUserByUsername(username) {
+    const sql = `
+        SELECT *
+        FROM users
+        WHERE username = ?`;
+
+    const [rows] = await pool.query(sql, [username]);
+    return rows[0] || null;
+}
+
+// select day from favorite_days
+// returns day_id's row data
+async function getDay(day_id) {
+    const sql = `
+        SELECT *
+        FROM favorite_days
+        WHERE day_id = ?`;
+
+    const [rows] = await pool.query(sql, [day_id]);
+    return rows[0] || null;
+}
+
+// select all days for a user
+// returns array of rows containing all days
+async function getFavDaysByUserId(user_id) {
+    const sql = `
+        SELECT *
+        FROM favorite_days
+        WHERE user_id = ?
+        ORDER BY day_date DESC`;
+
+    const [rows] = await pool.query(sql, [user_id]);
+    return rows;
+}
+
+// select day and all of its notes
+// returns the notes nested as an array within the day's data
+async function getDayWithNotes(day_id) {
+    const day = await getDay(day_id);
+    if (!day) return null;
+
+    const notes = await getNotesByDay(day_id);
+
+    return { ...day, notes };
+}
+
+// select note from notes
+// returns note_id's row data
+async function getNote(note_id) {
+    const sql = `
+        SELECT *
+        FROM notes
+        WHERE note_id = ?`;
+
+    const [rows] = await pool.query(sql, [note_id]);
+    return rows[0] || null;
+}
+
+// select all notes for a day
+// returns array of rows containing all notes
+async function getNotesByDay(day_id) {
+    const sql = `
+        SELECT *
+        FROM notes
+        WHERE day_id = ?`;
+
+    const [rows] = await pool.query(sql, [day_id]);
+    return rows;
+}
