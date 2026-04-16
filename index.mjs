@@ -7,6 +7,10 @@ const app = express();
 // bcrypt hashing rounds
 const saltRounds = 10;
 
+// defaults for user profiles
+const defaultProfilePicture = "placeholder";
+const defaultTempUnit = "F";
+
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
@@ -14,11 +18,11 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 
 // express-session settings
-app.set('trust proxy', 1); 
+app.set('trust proxy', 1);
 app.use(session({
-  secret: 'weather-based-trip-organizer-session-secret',
-  resave: false,
-  saveUninitialized: true
+    secret: 'weather-based-trip-organizer-session-secret',
+    resave: false,
+    saveUninitialized: true
 }));
 
 //setting up database connection pool
@@ -51,8 +55,8 @@ app.post('/login', async (req, res) => {
     let userAccount = await getUserByUsername(username);
 
     if (!userAccount) {
-        console.log("User not found"); // TODO: give error message
-        return res.redirect("login");
+        console.log("User not found");
+        return res.render("login", { error: "User not found" });
     }
 
     let userPass = userAccount.password;
@@ -77,9 +81,49 @@ app.post('/login', async (req, res) => {
 
         res.render("login"); // TODO: CHANGE TO INDEX
     } else {
-        console.log("Incorrect password"); // TODO: give error message
-        res.redirect("login");
+        console.log("Incorrect password");
+        res.render("login", { error: "Incorrect password" });
     }
+});
+
+// register post route
+app.post('/register', async (req, res) => {
+    let username = req.body.username;
+    let password = req.body.password;
+    let passConfirm = req.body.passConfirm;
+
+    // confirm password
+    if (password != passConfirm) {
+        console.log("Passwords do not match");
+        return res.render("login", { error: "Passwords do not match" });
+    }
+
+    // check username availability
+    let existingUser = await getUserByUsername(username);
+    if (existingUser) {
+        console.log("Username is taken");
+        return res.render("login", { error: "Username already taken" });
+    }
+
+    let hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    await addUser(username, hashedPassword, defaultProfilePicture, defaultTempUnit);
+
+    let userAccount = await getUserByUsername(username);
+
+    console.log("Account creation successful");
+    req.session.authenticated = true;
+    req.session.userId = userAccount.user_id;
+    req.session.username = userAccount.username;
+    req.session.profilePicturePath = userAccount.profile_picture_path;
+    req.session.tempUnit = userAccount.temp_unit;
+
+    // console.log(req.session.userId);
+    // console.log(req.session.username);
+    // console.log(req.session.profilePicturePath);
+    // console.log(req.session.tempUnit);
+
+    res.render("login"); // TODO: CHANGE TO INDEX
 });
 
 // logout route

@@ -12,6 +12,11 @@
     </header>
 
     <main>
+        <% if (typeof error !== 'undefined' && error) { %>
+            <%= error %> <br>
+        <% } %>
+        
+
         <!-- use btnRegister to hide login form and display create account form -->
         <form method="POST" action="/login">
 
@@ -25,29 +30,31 @@
             <br>
 
             <button id="btnLogin">Login</button>
-            <button id="btnRegister">Create New Account</button>
+            <button id="btnRegister" type="button">Create New Account</button>
 
         </form>
 
         <!-- use btnCreateAccountCancel to hide create account form and display login form -->
-        <form method="POST" action="/register">
+        <div id="registerForm">
+            <form method="POST" action="/register">
 
-            <h2>Create Account</h2>
+                <h2>Create Account</h2>
 
-            Username:
-            <input type="text" name="username" required>
-            <br>
-            Password:
-            <input type="password" name="password" required>
-            <br>
-            Confirm Password:
-            <input type="password" name="passConfirm" required>
-            <br>
+                Username:
+                <input type="text" name="username" required>
+                <br>
+                Password:
+                <input type="password" name="password" required>
+                <br>
+                Confirm Password:
+                <input type="password" name="passConfirm" required>
+                <br>
 
-            <button id="btnCreateAccount">Create Account</button>
-            <button id="btnCreateAccountCancel">Back to Login</button>
+                <button id="btnCreateAccount">Create Account</button>
+                <button id="btnCreateAccountCancel" type="button">Back to Login</button>
 
-        </form>
+            </form>
+        </div>
 
         <form action="/logout">
             <button id="btnLogout">Logout</button>
