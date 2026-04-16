@@ -24,8 +24,33 @@ app.get('/', (req, res) => {
     res.send('Hello Express app!')
 });
 
+// login page
 app.get('/login', (req, res) => {
     res.render("login");
+});
+
+// login post route
+app.post('/login', async (req, res) => {
+    let username = req.body.username;
+    let password = req.body.password;
+    // console.log(username);
+    // console.log(password);
+
+    let userAccount = await getUserByUsername(username);
+    let userPass = userAccount.password;
+
+    // console.log(userAccount);
+    // console.log(userPass);
+
+    if (password == userPass) {
+        console.log("Login successful");
+        res.render("login"); // TODO: CHANGE TO INDEX
+    } else {
+        console.log("Incorrect password"); // TODO: give error message
+        res.redirect("login");
+    }
+
+    // res.render("login");
 });
 
 app.get("/dbTest", async (req, res) => {
