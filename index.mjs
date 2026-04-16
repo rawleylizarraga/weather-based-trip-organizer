@@ -1,13 +1,25 @@
 import express from 'express';
 import mysql from 'mysql2/promise';
+import bcrypt from 'bcrypt';
+import session from 'express-session';
 
 const app = express();
+// bcrypt hashing rounds
+const saltRounds = 10;
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
 //for Express to get values using POST method
 app.use(express.urlencoded({ extended: true }));
+
+// express-session settings
+app.set('trust proxy', 1); 
+app.use(session({
+  secret: 'weather-based-trip-organizer-session-secret',
+  resave: false,
+  saveUninitialized: true
+}));
 
 //setting up database connection pool
 const pool = mysql.createPool({
@@ -37,20 +49,43 @@ app.post('/login', async (req, res) => {
     // console.log(password);
 
     let userAccount = await getUserByUsername(username);
+
+    if (!userAccount) {
+        console.log("User not found"); // TODO: give error message
+        return res.redirect("login");
+    }
+
     let userPass = userAccount.password;
+
+    let match = await bcrypt.compare(password, userPass);
 
     // console.log(userAccount);
     // console.log(userPass);
 
-    if (password == userPass) {
+    if (match) {
         console.log("Login successful");
+        req.session.authenticated = true;
+        req.session.userId = userAccount.user_id;
+        req.session.username = userAccount.username;
+        req.session.profilePicturePath = userAccount.profile_picture_path;
+        req.session.tempUnit = userAccount.temp_unit;
+
+        // console.log(req.session.userId);
+        // console.log(req.session.username);
+        // console.log(req.session.profilePicturePath);
+        // console.log(req.session.tempUnit);
+
         res.render("login"); // TODO: CHANGE TO INDEX
     } else {
         console.log("Incorrect password"); // TODO: give error message
         res.redirect("login");
     }
+});
 
-    // res.render("login");
+// logout route
+app.get('/logout', isAuthenticated, (req, res) => {
+    req.session.destroy();
+    res.redirect("login"); // TODO: CHANGE TO INDEX
 });
 
 app.get("/dbTest", async (req, res) => {
@@ -66,6 +101,17 @@ app.get("/dbTest", async (req, res) => {
 app.listen(3000, () => {
     console.log("Express server running")
 })
+
+// FUNCTIONS
+
+// authentication helper
+function isAuthenticated(req, res, next) {
+    if (!req.session.authenticated) {
+        res.redirect("login"); // TODO: CHANGE TO INDEX
+    } else {
+        next();
+    }
+}
 
 
 // CRUD HELPER FUNCTIONS
