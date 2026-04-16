@@ -24,6 +24,10 @@ app.get('/', (req, res) => {
     res.send('Hello Express app!')
 });
 
+app.get('/login', (req, res) => {
+    res.render("login");
+});
+
 app.get("/dbTest", async (req, res) => {
     try {
         const [rows] = await pool.query("SELECT CURDATE()");
