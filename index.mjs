@@ -1,13 +1,29 @@
 import express from 'express';
 import mysql from 'mysql2/promise';
+import bcrypt from 'bcrypt';
+import session from 'express-session';
 
 const app = express();
+// bcrypt hashing rounds
+const saltRounds = 10;
+
+// defaults for user profiles
+const defaultProfilePicture = "placeholder";
+const defaultTempUnit = "F";
 
 app.set('view engine', 'ejs');
 app.use(express.static('public'));
 
 //for Express to get values using POST method
 app.use(express.urlencoded({ extended: true }));
+
+// express-session settings
+app.set('trust proxy', 1);
+app.use(session({
+    secret: 'weather-based-trip-organizer-session-secret',
+    resave: false,
+    saveUninitialized: true
+}));
 
 //setting up database connection pool
 const pool = mysql.createPool({
@@ -24,6 +40,98 @@ app.get('/', (req, res) => {
     res.send('Hello Express app!')
 });
 
+// login page
+app.get('/login', (req, res) => {
+    res.render("login");
+});
+
+// login post route
+app.post('/login', async (req, res) => {
+    let username = req.body.username;
+    let password = req.body.password;
+    // console.log(username);
+    // console.log(password);
+
+    let userAccount = await getUserByUsername(username);
+
+    if (!userAccount) {
+        console.log("User not found");
+        return res.render("login", { error: "User not found" });
+    }
+
+    let userPass = userAccount.password;
+
+    let match = await bcrypt.compare(password, userPass);
+
+    // console.log(userAccount);
+    // console.log(userPass);
+
+    if (match) {
+        console.log("Login successful");
+        req.session.authenticated = true;
+        req.session.userId = userAccount.user_id;
+        req.session.username = userAccount.username;
+        req.session.profilePicturePath = userAccount.profile_picture_path;
+        req.session.tempUnit = userAccount.temp_unit;
+
+        // console.log(req.session.userId);
+        // console.log(req.session.username);
+        // console.log(req.session.profilePicturePath);
+        // console.log(req.session.tempUnit);
+
+        res.render("login"); // TODO: CHANGE TO INDEX
+    } else {
+        console.log("Incorrect password");
+        res.render("login", { error: "Incorrect password" });
+    }
+});
+
+// register post route
+app.post('/register', async (req, res) => {
+    let username = req.body.username;
+    let password = req.body.password;
+    let passConfirm = req.body.passConfirm;
+
+    // confirm password
+    if (password != passConfirm) {
+        console.log("Passwords do not match");
+        return res.render("login", { error: "Passwords do not match" });
+    }
+
+    // check username availability
+    let existingUser = await getUserByUsername(username);
+    if (existingUser) {
+        console.log("Username is taken");
+        return res.render("login", { error: "Username already taken" });
+    }
+
+    let hashedPassword = await bcrypt.hash(password, saltRounds);
+
+    await addUser(username, hashedPassword, defaultProfilePicture, defaultTempUnit);
+
+    let userAccount = await getUserByUsername(username);
+
+    console.log("Account creation successful");
+    req.session.authenticated = true;
+    req.session.userId = userAccount.user_id;
+    req.session.username = userAccount.username;
+    req.session.profilePicturePath = userAccount.profile_picture_path;
+    req.session.tempUnit = userAccount.temp_unit;
+
+    // console.log(req.session.userId);
+    // console.log(req.session.username);
+    // console.log(req.session.profilePicturePath);
+    // console.log(req.session.tempUnit);
+
+    res.render("login"); // TODO: CHANGE TO INDEX
+});
+
+// logout route
+app.get('/logout', isAuthenticated, (req, res) => {
+    req.session.destroy();
+    res.redirect("login"); // TODO: CHANGE TO INDEX
+});
+
 app.get("/dbTest", async (req, res) => {
     try {
         const [rows] = await pool.query("SELECT CURDATE()");
@@ -37,6 +145,17 @@ app.get("/dbTest", async (req, res) => {
 app.listen(3000, () => {
     console.log("Express server running")
 })
+
+// FUNCTIONS
+
+// authentication helper
+function isAuthenticated(req, res, next) {
+    if (!req.session.authenticated) {
+        res.redirect("login"); // TODO: CHANGE TO INDEX
+    } else {
+        next();
+    }
+}
 
 
 // CRUD HELPER FUNCTIONS
