@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+
+    <header>
+
+    </header>
+
+    <main>
+        <% if (typeof error !== 'undefined' && error) { %>
+            <%= error %> <br>
+        <% } %>
+        
+
+        <!-- use btnRegister to hide login form and display create account form -->
+        <form method="POST" action="/login">
+
+            <h2>Login</h2>
+
+            Username:
+            <input type="text" name="username" required>
+            <br>
+            Password:
+            <input type="password" name="password" required>
+            <br>
+
+            <button id="btnLogin">Login</button>
+            <button id="btnRegister" type="button">Create New Account</button>
+
+        </form>
+
+        <!-- use btnCreateAccountCancel to hide create account form and display login form -->
+        <div id="registerForm">
+            <form method="POST" action="/register">
+
+                <h2>Create Account</h2>
+
+                Username:
+                <input type="text" name="username" required>
+                <br>
+                Password:
+                <input type="password" name="password" required>
+                <br>
+                Confirm Password:
+                <input type="password" name="passConfirm" required>
+                <br>
+
+                <button id="btnCreateAccount">Create Account</button>
+                <button id="btnCreateAccountCancel" type="button">Back to Login</button>
+
+            </form>
+        </div>
+
+        <form action="/logout">
+            <button id="btnLogout">Logout</button>
+        </form>
+    </main>
+
+    <footer>
+
+    </footer>
+    
+</body>
+</html>
