@@ -132,6 +132,10 @@ app.get('/logout', isAuthenticated, (req, res) => {
     res.redirect("login"); // TODO: CHANGE TO INDEX
 });
 
+app.get('/preferences', (req, res) => {
+    res.render("preferences");
+});
+
 app.get("/dbTest", async (req, res) => {
     try {
         const [rows] = await pool.query("SELECT CURDATE()");
