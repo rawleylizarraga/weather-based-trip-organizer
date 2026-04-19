@@ -132,15 +132,40 @@ app.get('/logout', isAuthenticated, (req, res) => {
     res.redirect("login"); // TODO: CHANGE TO INDEX
 });
 
-app.get('/preferences', (req, res) => {
+// preferences get route
+app.get('/preferences', isAuthenticated, async (req, res) => {
     const profilePictures = [
-    'https://cdn.pixabay.com/photo/2016/07/17/18/51/mexico-1524499_1280.png',
-    'https://cdn.pixabay.com/photo/2016/07/17/18/44/england-1524478_1280.png',
-    'https://cdn.pixabay.com/photo/2016/07/17/18/20/united-states-1524403_1280.png',
-    'https://cdn.pixabay.com/photo/2016/07/17/18/26/france-1524418_1280.png'
+        'https://cdn.pixabay.com/photo/2016/07/17/18/51/mexico-1524499_1280.png',
+        'https://cdn.pixabay.com/photo/2016/07/17/18/44/england-1524478_1280.png',
+        'https://cdn.pixabay.com/photo/2016/07/17/18/20/united-states-1524403_1280.png',
+        'https://cdn.pixabay.com/photo/2016/07/17/18/26/france-1524418_1280.png'
     ];
 
-res.render('preferences', { profilePictures });
+    let user = await getUserById(req.session.userId);
+
+    res.render('preferences', {
+        profilePictures,
+        currentTempUnit: user.temp_unit,
+        currentProfilePic: user.profile_picture_path
+    });
+});
+
+//preferences post route
+app.post('/preferences', isAuthenticated, async (req, res) => {
+    let profilePic = req.body.profilePic;
+    let tempUnit = req.body.tempUnit ? "C" : "F";
+    let userId = req.session.userId;
+
+    if (!profilePic) {
+        profilePic = req.session.profilePicturePath || defaultProfilePicture;
+    }
+
+    await updateUserPrefs(profilePic, tempUnit, userId);
+
+    req.session.profilePicturePath = profilePic;
+    req.session.tempUnit = tempUnit;
+
+    res.redirect('/preferences');
 });
 
 app.get("/dbTest", async (req, res) => {
