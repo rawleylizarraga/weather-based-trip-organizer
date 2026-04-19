@@ -9,10 +9,16 @@
 <body>
     <h1>Preferences</h1>
     <div>
-        <label><h3>Select a profile picture</h3></label>
-        <select name="profilePic">
-            
-        </select>
+        <form method="POST" action="/preferences">
+  <% profilePictures.forEach(pic => { %>
+    <label>
+      <input type="radio" name="profilePic" value="<%= pic %>">
+      <img src="<%= pic %>" class="avatar">
+    </label>
+  <% }) %>
+
+  <button type="submit">Save</button>
+</form>
     </div>
     <div>
         <h3>Preferred temperature unit</h3>

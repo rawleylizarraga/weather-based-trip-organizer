@@ -133,7 +133,14 @@ app.get('/logout', isAuthenticated, (req, res) => {
 });
 
 app.get('/preferences', (req, res) => {
-    res.render("preferences");
+    const profilePictures = [
+    'https://cdn.pixabay.com/photo/2016/07/17/18/51/mexico-1524499_1280.png',
+    'https://cdn.pixabay.com/photo/2016/07/17/18/44/england-1524478_1280.png',
+    'https://cdn.pixabay.com/photo/2016/07/17/18/20/united-states-1524403_1280.png',
+    'https://cdn.pixabay.com/photo/2016/07/17/18/26/france-1524418_1280.png'
+    ];
+
+res.render('preferences', { profilePictures });
 });
 
 app.get("/dbTest", async (req, res) => {
