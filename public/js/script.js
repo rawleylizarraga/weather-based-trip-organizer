@@ -20,10 +20,15 @@ async function loadCountries() {
     let countryDropdown = document.querySelector("#countryDropdown");
     countryDropdown.innerHTML = `<option value="">Country Dropdown</option>`;
 
+    let allowedCountries = ["US", "CA", "AU", "DE", "CN", "ES", "IT", "IN", "BR", "MX", "JP", "NZ", "ZA", "NL", "AF", "GR", "VN", "UA", "SE", "RU", "PT", "ID" ,"CU", "DK", "EG", "FI", "HN", "IE", "IR", "IQ", "JM", "KE", "KP", "KR", "KW", "NG", "ZW" ];
+
     for (let country of countries) {
+        if (allowedCountries.includes(country.isoCode)) {
+    
         countryDropdown.innerHTML += `
             <option value="${country.isoCode}">${country.name}</option>
         `;
+        }
     }
 }
 
