@@ -121,7 +121,7 @@ app.post('/login', async (req, res) => {
         // console.log(req.session.profilePicturePath);
         // console.log(req.session.tempUnit);
 
-        res.render("login"); // TODO: CHANGE TO INDEX
+        res.redirect("/");
     } else {
         console.log("Incorrect password");
         res.render("login", { error: "Incorrect password" });
@@ -165,13 +165,13 @@ app.post('/register', async (req, res) => {
     // console.log(req.session.profilePicturePath);
     // console.log(req.session.tempUnit);
 
-    res.render("login"); // TODO: CHANGE TO INDEX
+    res.redirect("/");
 });
 
 // logout route
 app.get('/logout', isAuthenticated, (req, res) => {
     req.session.destroy();
-    res.redirect("login"); // TODO: CHANGE TO INDEX
+    res.redirect("/");
 });
 
 app.get("/dbTest", async (req, res) => {
@@ -193,7 +193,7 @@ app.listen(3000, () => {
 // authentication helper
 function isAuthenticated(req, res, next) {
     if (!req.session.authenticated) {
-        res.redirect("login"); // TODO: CHANGE TO INDEX
+        res.redirect("/");
     } else {
         next();
     }
