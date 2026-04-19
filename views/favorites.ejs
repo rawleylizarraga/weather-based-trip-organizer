@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Favorites</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+  <div class="favorites-container">
+    <h1>Favorites</h1>
+
+    <div class="favorites-top-buttons">
+      <a href="/" class="nav-btn">home button</a>
+      <a href="/login" class="nav-btn">login/logout</a>
+    </div>
+
+    <div class="favorites-layout">
+
+      <aside class="favorites-sidebar">
+        <p class="sidebar-label">list of favorite days</p>
+
+        <% if (favorites.length > 0) { %>
+          <% favorites.forEach(fav => { %>
+            <button
+              class="favorite-day-btn"
+              data-day-id="<%= fav.day_id %>"
+              data-city="<%= fav.city_name %>"
+              data-state="<%= fav.state_name %>"
+              data-country="<%= fav.country_name %>"
+              data-date="<%= fav.day_date %>"
+              data-weather='<%- JSON.stringify(fav.weather_data || {}) %>'
+              data-notes='<%- JSON.stringify(fav.notes || []) %>'>
+              <strong><%= fav.city_name %></strong><br>
+              <span><%= new Date(fav.day_date).toLocaleDateString() %></span>
+            </button>
+          <% }) %>
+        <% } else { %>
+          <p>No favorite days yet.</p>
+        <% } %>
+      </aside>
+
+      <section class="favorites-details">
+        <div id="favoriteInfo" class="favorite-info-box">
+          <p id="detailsTitle">favorite info - weather output</p>
+
+          <div id="weatherOutput" class="weather-output">
+            Select a favorite day to view saved weather.
+          </div>
+
+          <div class="notes-box">
+            <p>attached notes</p>
+            <div id="notesOutput">
+              No notes selected yet.
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+<!-- Note Popup Modal -->
+<div id="noteModal" class="modal hidden">
+  <div class="modal-content">
+    <h2>note popup modal</h2>
+
+    <label for="modalNoteTitle"><strong>note title</strong></label>
+    <input type="text" id="modalNoteTitle" class="modal-input" readonly>
+
+    <div class="modal-top">
+      <div class="icon-section">
+        <label for="modalIconInput"><strong>icon</strong></label>
+        <input type="text" id="modalIconInput" class="modal-input" placeholder="Enter icon or image path" readonly>
+      </div>
+
+      <button id="editNoteBtn" class="small-btn" type="button">edit note button</button>
+    </div>
+
+    <div class="modal-body">
+      <label for="noteTextArea"><strong>note description</strong></label>
+      <textarea id="noteTextArea" readonly></textarea>
+    </div>
+
+    <div class="modal-actions">
+      <button id="saveNoteBtn" class="small-btn" type="button">submit btn</button>
+      <button id="cancelNoteBtn" class="small-btn" type="button">cancel btn</button>
+    </div>
+  </div>
+</div>
+
+  <script src="/js/favorites.js"></script>
+</body>
+</html>
