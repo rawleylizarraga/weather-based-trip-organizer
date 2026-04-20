@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <link rel="stylesheet" href="/css/loginstyles.css">
 </head>
 <body>
 
@@ -11,11 +12,18 @@
 
     </header>
 
+    <nav>
+        <a href="/">
+            <button> Home </button>
+        </a>
+    </nav>
+
     <main>
-        <% if (typeof error !== 'undefined' && error) { %>
-            <%= error %> <br>
-        <% } %>
-        
+        <span id="loginError">
+            <% if (typeof error !== 'undefined' && error) { %>
+                <%= error %> <br>
+            <% } %>
+        </span>
 
         <!-- use btnRegister to hide login form and display create account form -->
         <form method="POST" action="/login" id="loginForm">
@@ -23,10 +31,10 @@
             <h2>Login</h2>
 
             Username:
-            <input type="text" name="username" required>
+            <input type="text" name="username" id="loginUsername" required>
             <br>
             Password:
-            <input type="password" name="password" required>
+            <input type="password" name="password" id="loginPass" required>
             <br>
 
             <button id="btnLogin">Login</button> <br>
@@ -41,13 +49,13 @@
                 <h2>Create Account</h2>
 
                 Username:
-                <input type="text" name="username" required>
+                <input type="text" name="username" id="regUsername" required>
                 <br>
                 Password:
-                <input type="password" name="password" required>
+                <input type="password" name="password" id="regPass" required>
                 <br>
                 Confirm Password:
-                <input type="password" name="passConfirm" required>
+                <input type="password" name="passConfirm" id="regPassConf" required>
                 <br>
 
                 <button id="btnCreateAccount">Create Account</button> <br>
@@ -61,25 +69,9 @@
         </form> -->
     </main>
 
-    <footer>
+    <%- include("partials/footer.ejs") %>
 
-    </footer>
-
-
-    <script>
-        document.querySelector("#btnRegister").addEventListener("click", toggleForm);
-        document.querySelector("#btnCreateAccountCancel").addEventListener("click", toggleForm);
-
-        function toggleForm() {
-            if (document.querySelector("#registerForm").hidden) {
-                document.querySelector("#registerForm").hidden = false;
-                document.querySelector("#loginForm").hidden = true;
-            } else {
-                document.querySelector("#registerForm").hidden = true;
-                document.querySelector("#loginForm").hidden = false;
-            }
-        }
-    </script>
+    <script src="/js/loginScript.js"></script>
     
 </body>
 </html>
