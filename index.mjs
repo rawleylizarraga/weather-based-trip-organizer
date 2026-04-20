@@ -3,6 +3,10 @@ import mysql from 'mysql2/promise';
 import bcrypt from 'bcrypt';
 import session from 'express-session';
 
+import pkg from 'country-state-city';
+const { Country, State, City } = pkg;
+
+
 const app = express();
 // bcrypt hashing rounds
 const saltRounds = 10;
@@ -36,8 +40,46 @@ const pool = mysql.createPool({
 });
 
 //routes
+//home/index page
 app.get('/', (req, res) => {
-    res.send('Hello Express app!')
+    res.render("index", {
+        authenticated: req.session.authenticated,
+        tempUnit: req.session.tempUnit || "F"
+    });
+});
+
+//api get countries
+app.get("/api/countries", (req, res) => {
+    let countries = Country.getAllCountries();
+    res.send(countries);
+});
+
+//api get states
+app.get("/api/states/:countryCode", (req, res) => {
+    let countryCode = req.params.countryCode;
+    let states = State.getStatesOfCountry(countryCode);
+    res.send(states);
+});
+
+//api get cities
+app.get("/api/cities/:countryCode/:stateCode", (req, res) => {
+    let countryCode = req.params.countryCode;
+    let stateCode = req.params.stateCode;
+    let cities = City.getCitiesOfState(countryCode, stateCode);
+    res.send(cities);
+});
+
+// api get weather from Open-Meteo
+app.get("/api/weather", async (req, res) => {
+    let latitude = req.query.latitude;
+    let longitude = req.query.longitude;
+
+    let url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
+
+    let response = await fetch(url);
+    let data = await response.json();
+
+    res.send(data);
 });
 
 // login page
