@@ -147,6 +147,7 @@ app.get("/dbTest", async (req, res) => {
 
 //favorites route
 app.get("/favorites", isAuthenticated, async (req, res) => {
+try {
   const userId = req.session.userId;
 
     // use your helper function 
