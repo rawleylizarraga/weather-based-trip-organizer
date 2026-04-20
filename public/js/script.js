@@ -3,6 +3,7 @@ let allWeatherDays = [];
 let displayedWeatherDays = [];
 let currentWeatherIndex = 0;
 let selectedCityData = null;
+let currentWeatherData = null;
 
 document.querySelector("#countryDropdown").addEventListener("change", loadStates);
 document.querySelector("#stateDropdown").addEventListener("change", loadCities);
@@ -11,7 +12,7 @@ document.querySelector("#rangeBtn").addEventListener("click", setRangeMode);
 document.querySelector("#submitBtn").addEventListener("click", getWeatherData);
 document.querySelector("#prevBtn").addEventListener("click", showPreviousDay);
 document.querySelector("#nextBtn").addEventListener("click", showNextDay);
-document.querySelector("#favoriteBtn").addEventListener("click", handleFavorite);
+document.querySelector("#favoriteForm").addEventListener("submit", handleFavorite);
 
 async function loadCountries() {
     let response = await fetch("/api/countries");
@@ -108,11 +109,16 @@ async function getWeatherData() {
     let longitude = selectedCity.dataset.longitude;
 
     selectedCityData = {
-        city_name: cityDropdown.value
+        city_name: cityDropdown.value,
+        country_name: countryDropdown.options[countryDropdown.selectedIndex].text,
+        state_name: stateDropdown.options[stateDropdown.selectedIndex].text,
+        latitude: latitude,
+        longitude: longitude
     };
 
     let response = await fetch(`/api/weather?latitude=${latitude}&longitude=${longitude}`);
     let data = await response.json();
+    currentWeatherData = data.current;
 
     if (!data.daily || !data.daily.time) {
         weatherOutput.innerHTML = "Weather data unavailable.";
@@ -194,6 +200,14 @@ function displayWeather() {
         <p><strong>High:</strong> ${highTemp.toFixed(1)}${unit}</p>
         <p><strong>Low:</strong> ${lowTemp.toFixed(1)}${unit}</p>
     `;
+    document.querySelector("#fav_country").value = selectedCityData.country_name;
+    document.querySelector("#fav_state").value = selectedCityData.state_name;
+    document.querySelector("#fav_city").value = selectedCityData.city_name;
+    document.querySelector("#fav_date").value = currentDay.date;
+    document.querySelector("#fav_longitude").value = selectedCityData.longitude;
+    document.querySelector("#fav_latitude").value = selectedCityData.latitude;
+    document.querySelector("#fav_weather").value =`{"current":{"temperature_2m":${currentWeatherData.temperature_2m},"wind_speed_10m":${currentWeatherData.wind_speed_10m},"weather_code":${currentWeatherData.weather_code}}}`;
+    document.querySelector("#fav_date").value = currentDay.date;
 
     updatePageCount();
 }
@@ -230,8 +244,17 @@ function updatePageCount() {
     }
 }
 
-function handleFavorite() {
-    document.querySelector("#favoriteMessage").textContent = "You need to login to save favorites.";
+function handleFavorite(event) {
+let favoriteMessage = document.querySelector("#favoriteMessage");
+    let favDate = document.querySelector("#fav_date").value;
+    let favWeather = document.querySelector("#fav_weather").value;
+
+    favoriteMessage.textContent = "";
+
+    if (!favDate || !favWeather) {
+        event.preventDefault();
+        favoriteMessage.textContent = "No current day selected.";
+    }
 }
 
 loadCountries();

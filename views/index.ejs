@@ -92,10 +92,21 @@
 
             </div>
 
-            <!-- FAVORITES BUTTON -->
-            <button type="button" id="favoriteBtn">Add to Favorites</button>
+            <!-- FAVORITES BUTTON FORM -->
 
-            <p id="favoriteMessage" class="favorite-message"></p>
+            <form method="POST" action="/favorites/add" id="favoriteForm"> 
+                <input type="hidden" name="country_name" id="fav_country">
+                <input type="hidden" name="state_name" id="fav_state">
+                <input type="hidden" name="city_name" id="fav_city">
+                <input type="hidden" name="longitude" id="fav_longitude">
+                <input type="hidden" name="latitude" id="fav_latitude">
+                <input type="hidden" name="weather_data" id="fav_weather">
+                <input type="hidden" name="day_date" id="fav_date">
+
+                <button type="submit" id="favoriteBtn">Add to Favorites</button>
+                <p id="favoriteMessage" class="favorite-message"></p>
+            </form>
+           
 
         </div>
 
