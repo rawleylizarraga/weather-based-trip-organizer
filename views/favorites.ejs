@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Favorites</title>
-  <link rel="stylesheet" href="/css/favstyles.css">
+  <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
 
@@ -49,14 +49,18 @@
             Select a favorite day to view saved weather.
           </div>
 
-          <div class="notes-box">
-            <p>attached notes</p>
-            <div id="notesOutput">
-              No notes selected yet.
-            </div>
-          </div>
-        </div>
-      </section>
+     <div class="notes-box">
+      <div class="notes-header">
+        <p>attached notes</p>
+        <button id="addNoteBtn" class="small-btn" type="button">+ Add Note</button>
+      </div>
+
+      <div id="notesOutput">
+        No notes selected yet.
+      </div>
+    </div>
+  </div>
+</section>
 
     </div>
   </div>
@@ -71,9 +75,18 @@
 
     <div class="modal-top">
       <div class="icon-section">
-        <label for="modalIconInput"><strong>icon</strong></label>
-        <input type="text" id="modalIconInput" class="modal-input" placeholder="Enter icon or image path" readonly>
-      </div>
+  <label for="modalIconInput"><strong>icon</strong></label>
+
+  <select id="modalIconInput" class="modal-input" disabled>
+    <option value="">Select icon</option>
+    <option value="☀️">☀️ Sunny</option>
+    <option value="🌧️">🌧️ Rain</option>
+    <option value="🍽️">🍽️ Food</option>
+    <option value="✈️">✈️ Travel</option>
+    <option value="🏖️">🏖️ Beach</option>
+    <option value="☕">☕ Coffee</option>
+  </select>
+</div>
 
       <button id="editNoteBtn" class="small-btn" type="button">edit note button</button>
     </div>
@@ -85,6 +98,7 @@
 
     <div class="modal-actions">
       <button id="saveNoteBtn" class="small-btn" type="button">submit btn</button>
+      <button id="deleteNoteBtn" class="small-btn" type="button">delete btn</button>
       <button id="cancelNoteBtn" class="small-btn" type="button">cancel btn</button>
     </div>
   </div>

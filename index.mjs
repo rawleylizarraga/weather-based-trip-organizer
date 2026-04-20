@@ -146,9 +146,8 @@ app.get("/dbTest", async (req, res) => {
 
 
 //favorites route
-app.get("/favorites", async (req, res) => {
-  try {
-     const userId = req.session.userId || 2;
+app.get("/favorites", isAuthenticated, async (req, res) => {
+  const userId = req.session.userId;
 
     // use your helper function 
     let favorites = await getFavDaysByUserId(userId);
@@ -190,6 +189,32 @@ app.post("/notes/update", async (req, res) => {
     res.json({ success });
   } catch (error) {
     console.error("Note update error:", error);
+    res.json({ success: false });
+  }
+});
+
+//add notes route
+app.post("/notes/add", async (req, res) => {
+  try {
+    const { day_id, note_text, icon_path, note_title } = req.body;
+
+    const noteId = await addNote(day_id, note_text, icon_path, note_title);
+
+    res.json({ success: true, noteId });
+  } catch (error) {
+    console.error("Note add error:", error);
+    res.json({ success: false });
+  }
+});
+
+//delete notes
+app.post("/notes/delete", async (req, res) => {
+  try {
+    const { note_id } = req.body;
+    const success = await deleteNote(note_id);
+    res.json({ success });
+  } catch (err) {
+    console.error("Delete error:", err);
     res.json({ success: false });
   }
 });
