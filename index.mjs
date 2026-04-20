@@ -20,6 +20,7 @@ app.use(express.static('public'));
 
 //for Express to get values using POST method
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // express-session settings
 app.set('trust proxy', 1);
@@ -81,6 +82,7 @@ app.get("/api/weather", async (req, res) => {
 
     res.send(data);
 });
+
 
 // login page
 app.get('/login', (req, res) => {
@@ -183,6 +185,56 @@ app.get("/dbTest", async (req, res) => {
         res.status(500).send("Database error");
     }
 });//dbTest
+
+
+//favorites route
+app.get("/favorites", async (req, res) => {
+  try {
+     const userId = req.session.userId || 2;
+
+    // use your helper function 
+    let favorites = await getFavDaysByUserId(userId);
+
+    // attach notes to each favorite
+    for (let fav of favorites) {
+      let notes = await getNotesByDay(fav.day_id);
+      fav.notes = notes;
+
+      if (typeof fav.weather_data === "string") {
+        try {
+          fav.weather_data = JSON.parse(fav.weather_data);
+        } catch {
+          fav.weather_data = {};
+        }
+      }
+    }
+
+    res.render("favorites", { favorites });
+
+  } catch (error) {
+    console.error(error);
+    res.send("Error loading favorites");
+  }
+});
+
+//update notes route
+app.post("/notes/update", async (req, res) => {
+  try {
+    const { note_id, note_text, icon_path, note_title } = req.body;
+
+    const success = await updateNote(
+      note_text,
+      icon_path,
+      note_title,
+      note_id
+    );
+
+    res.json({ success });
+  } catch (error) {
+    console.error("Note update error:", error);
+    res.json({ success: false });
+  }
+});
 
 app.listen(3000, () => {
     console.log("Express server running")
