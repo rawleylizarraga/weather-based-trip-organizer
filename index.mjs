@@ -83,6 +83,33 @@ app.get("/api/weather", async (req, res) => {
     res.send(data);
 });
 
+//post add favorite day
+app.post("/favorites/add", async (req, res) => {
+    if (!req.session.authenticated) {
+        return res.redirect("/login");
+    }
+
+    let country_name = req.body.country_name;
+    let state_name = req.body.state_name;
+    let city_name = req.body.city_name;
+    let longitude = req.body.longitude;
+    let latitude = req.body.latitude;
+    let weather_data = req.body.weather_data;
+    let day_date = req.body.day_date;
+
+     await addFavDay(
+      req.session.userId,
+      country_name,
+      state_name,
+      city_name,
+      longitude,
+      latitude,
+      weather_data,
+      day_date
+    );
+    res.redirect("/favorites");
+
+});
 
 // login page
 app.get('/login', (req, res) => {
