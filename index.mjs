@@ -12,7 +12,7 @@ const app = express();
 const saltRounds = 10;
 
 // defaults for user profiles
-const defaultProfilePicture = "placeholder";
+const defaultProfilePicture = "profilepic1.png";
 const defaultTempUnit = "F";
 
 app.set('view engine', 'ejs');
@@ -114,7 +114,14 @@ app.post("/favorites/add", async (req, res) => {
 
 // login page
 app.get('/login', (req, res) => {
-    res.render("login");
+    const profilePictures = [
+        'profilepic1.png',
+        'profilepic2.png',
+        'profilepic3.png',
+        'profilepic4.png'
+    ];
+
+    res.render("login", { profilePictures});
 });
 
 // login post route
@@ -163,6 +170,12 @@ app.post('/register', async (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
     let passConfirm = req.body.passConfirm;
+    let profilePic = req.body.profilePic;
+    let tempUnit = req.body.tempUnit ? "C" : "F";
+
+    if (!profilePic) {
+        profilePic = defaultProfilePicture;
+    }
 
     // confirm password
     if (password != passConfirm) {
@@ -179,7 +192,7 @@ app.post('/register', async (req, res) => {
 
     let hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    await addUser(username, hashedPassword, defaultProfilePicture, defaultTempUnit);
+    await addUser(username, hashedPassword, profilePic, tempUnit);
 
     let userAccount = await getUserByUsername(username);
 
