@@ -1,0 +1,40 @@
+<%- include("partials/head.ejs") %>
+
+<body class="bg-light">
+    <div class="container py-5">
+    <div class="card shadow-sm">
+    <div class="card-body">
+    <h1 class="mb-4 text-center">Preferences</h1>
+
+    <form method="POST" action="/preferences">
+<div class="mb-4">
+  <h5 class="mb-3">Preferred profile picture</h5>
+
+  <div class="d-flex flex-wrap gap-3">
+    <% profilePictures.forEach(pic => { %>
+      <label class="text-center">
+        <input type="radio" name="profilePic" value="<%= pic %>" <%= currentProfilePic === pic ? "checked" : "" %>>
+        <img src="<%= pic %>" class="avatar rounded border">
+      </label>
+    <% }) %>
+  </div>
+</div>
+
+        <div>
+            <h5 class="mb-3">Preferred temperature unit</h5>
+            <span>F°</span>
+            <label class="switch">
+                <input type="checkbox" name="tempUnit" value="C" <%= currentTempUnit === "C" ? "checked" : "" %>>
+                <span class="slider round"></span>
+            </label>
+            <span>C°</span>
+        </div> <br><br>
+
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+    </div>
+    </div>
+    </div>
+    <%- include("partials/footer.ejs") %>
+</body>
+</html>
