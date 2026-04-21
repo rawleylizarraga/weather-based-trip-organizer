@@ -45,7 +45,8 @@ const pool = mysql.createPool({
 app.get('/', (req, res) => {
     res.render("index", {
         authenticated: req.session.authenticated,
-        tempUnit: req.session.tempUnit || "F"
+        tempUnit: req.session.tempUnit || "F",
+        profilePicture: req.session.profilePicturePath || "profilepic1.png"
     });
 });
 
