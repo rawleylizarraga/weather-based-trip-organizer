@@ -5,120 +5,119 @@
     <div class="card shadow-sm">
         <div class="card-body"> 
     
-    <!-- PAGE TITLE -->
-    <h1 class="mb-4 text-center">Weather-Based Trip Organizer</h1>
+            <!-- PAGE TITLE -->
+            <h1 class="mb-4 text-center">Weather-Based Trip Organizer</h1>
 
     
-    <!-- TOP BUTTONS -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
+            <!-- TOP BUTTONS -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
 
-        <!-- Favorites Page -->
-        <a href="/favorites">
-            <button class="btn btn-outline-primary btn-sm">Favorites</button>
-        </a>
+                <!-- Favorites Page -->
+                <a href="/favorites">
+                    <button class="btn btn-outline-primary btn-sm">Favorites</button>
+                </a>
 
-        <!-- Login / Logout -->
-        <% if (authenticated) { %>
-            <a href="/logout">
-                <img src="/img/<%= profilePicture %>" alt="Profile Picture" class="profile-pic">
-                <button class="btn btn-outline-danger btn-sm">Logout</button>
-            </a>
-        <% } else { %>
-            <a href="/login">
-                <button class="btn btn-primary btn-sm">Login</button>
-            </a>
-        <% } %>
-
-    </div>
-
-    <!-- MAIN PAGE -->
-    <div class="row g-4">
-
-        <!-- LEFT AREA -->
-        <div class="col-md-4">
-
-            <!-- COUNTRY -->
-            <select id="countryDropdown" class="form-select mb-3">
-                <option value="">Country Dropdown</option>
-            </select>
-
-            <!-- STATE -->
-            <select id="stateDropdown" class="form-select mb-3">
-                <option value="">State Dropdown</option>
-            </select>
-
-            <!-- CITY -->
-            <select id="cityDropdown" class="form-select mb-3">
-                <option value="">City Dropdown</option>
-            </select>
-
-            <!-- DAY / RANGE BUTTONS -->
-            <div class="day-range-row">
-                <button type="button" class="btn btn-outline-secondary btn-sm" id="dayBtn">Day</button>
-                <button type="button" class="btn btn-outline-secondary btn-sm" id="rangeBtn">Range</button>
+                <!-- Login / Logout -->
+                <% if (authenticated) { %>
+                    <a href="/logout">
+                        <img src="/img/<%= profilePicture %>" alt="Profile Picture" class="profile-pic">
+                        <button class="btn btn-outline-danger btn-sm">Logout</button>
+                    </a>
+                <% } else { %>
+                    <a href="/login">
+                        <button class="btn btn-primary btn-sm">Login</button>
+                    </a>
+                <% } %>
             </div>
 
-            <!-- DAY INPUT -->
-            <input type="date" id="dayInput" class="form-control mb-3">
+            <!-- MAIN PAGE -->
+            <div class="row g-4">
 
-            <!-- RANGE INPUT (hidden initially) -->
-            <input type="number" id="rangeInput" class="form-control mb-3" placeholder="Range (days)" min="1" max="7" style="display:none;">
+                <!-- LEFT AREA -->
+                <div class="col-md-4">
 
-            <!-- SUBMIT -->
-            <button type="button" id="submitBtn" class="btn btn-primary w-100">Get Weather</button>
+                    <!-- COUNTRY -->
+                    <select id="countryDropdown" class="form-select mb-3">
+                        <option value="">Country Dropdown</option>
+                    </select>
 
-        </div>
+                    <!-- STATE -->
+                    <select id="stateDropdown" class="form-select mb-3">
+                        <option value="">State Dropdown</option>
+                    </select>
 
-        <!-- RIGHT AREA -->
-        <div class="col-md-8">
+                    <!-- CITY -->
+                    <select id="cityDropdown" class="form-select mb-3">
+                        <option value="">City Dropdown</option>
+                    </select>
 
-            <div class="card">
-                <div class="card-body">
-                <!-- WEATHER OUTPUT -->
-                <div class="weather-output" id="weatherOutput">
-                    Select a location to view weather
+                    <!-- DAY / RANGE BUTTONS -->
+                    <div class="day-range-row">
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="dayBtn">Day</button>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" id="rangeBtn">Range</button>
+                    </div>
+
+                    <!-- DAY INPUT -->
+                    <input type="date" id="dayInput" class="form-control mb-3">
+
+                    <!-- RANGE INPUT (hidden initially) -->
+                    <input type="number" id="rangeInput" class="form-control mb-3" placeholder="Range (days)" min="1" max="7" style="display:none;">
+
+                    <!-- SUBMIT -->
+                    <button type="button" id="submitBtn" class="btn btn-primary w-100">Get Weather</button>
                 </div>
 
-                <!-- NAVIGATION -->
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <button type="button" class="btn btn-outline-secondary btn-sm"  id="prevBtn">Prev</button>
-                    <span id="weatherPageCount">1/1</span>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" id="nextBtn">Next</button>
+                <!-- RIGHT AREA -->
+                <div class="col-md-8">
+
+                    <div class="card">
+                        <div class="card-body">
+                        <!-- WEATHER OUTPUT -->
+                            <div class="weather-output" id="weatherOutput">
+                                Select a location to view weather
+                            </div>
+
+                            <!-- NAVIGATION -->
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <button type="button" class="btn btn-outline-secondary btn-sm"  id="prevBtn">Prev</button>
+                                <span id="weatherPageCount">1/1</span>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="nextBtn">Next</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAVORITES BUTTON FORM -->
+
+                    <form method="POST" action="/favorites/add" id="favoriteForm"> 
+                        <input type="hidden" name="country_name" id="fav_country">
+                        <input type="hidden" name="state_name" id="fav_state">
+                        <input type="hidden" name="city_name" id="fav_city">
+                        <input type="hidden" name="longitude" id="fav_longitude">
+                        <input type="hidden" name="latitude" id="fav_latitude">
+                        <input type="hidden" name="weather_data" id="fav_weather">
+                        <input type="hidden" name="day_date" id="fav_date">
+
+                        <div class="d-flex justify-content-center">
+                            <button type="submit" id="favoriteBtn" class="btn btn-success w-50">Add to Favorites</button>
+                        </div>
+                        <p id="favoriteMessage" class="favorite-message"></p>
+                    </form>
+                
                 </div>
-                </div>
+            
+         
             </div>
-
-            <!-- FAVORITES BUTTON FORM -->
-
-            <form method="POST" action="/favorites/add" id="favoriteForm"> 
-                <input type="hidden" name="country_name" id="fav_country">
-                <input type="hidden" name="state_name" id="fav_state">
-                <input type="hidden" name="city_name" id="fav_city">
-                <input type="hidden" name="longitude" id="fav_longitude">
-                <input type="hidden" name="latitude" id="fav_latitude">
-                <input type="hidden" name="weather_data" id="fav_weather">
-                <input type="hidden" name="day_date" id="fav_date">
-
-                <div class="d-flex justify-content-center">
-                    <button type="submit" id="favoriteBtn" class="btn btn-success w-50">Add to Favorites</button>
-                </div>
-                <p id="favoriteMessage" class="favorite-message"></p>
-            </form>
-           
-
         </div>
-
-    </div>
-
+    </div>           
 </div>
 
-<%- include("partials/footer.ejs") %>
+
 
 <script>
     window.tempUnit = "<%= tempUnit || 'F' %>";
 </script>
 
 <script src="/js/script.js"></script>
-
+    <%- include("partials/footer.ejs") %>
 </body>
 </html>
