@@ -197,6 +197,15 @@ app.post('/register', async (req, res) => {
     res.redirect("/");
 });
 
+// check username helper
+app.get('/api/check-username', async (req, res) => {
+    let username = req.query.username;
+    if (await getUserByUsername(username)) {
+        return res.send(true);
+    }
+   return res.send(false);
+});
+
 // logout route
 app.get('/logout', isAuthenticated, (req, res) => {
     req.session.destroy();
