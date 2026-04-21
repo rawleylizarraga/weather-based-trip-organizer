@@ -13,9 +13,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const noteTextArea = document.getElementById("noteTextArea");
   const editNoteBtn = document.getElementById("editNoteBtn");
   const saveNoteBtn = document.getElementById("saveNoteBtn");
+  const deleteNoteBtn = document.getElementById("deleteNoteBtn");
   const cancelNoteBtn = document.getElementById("cancelNoteBtn");
+  const addNoteBtn = document.getElementById("addNoteBtn");
 
   let selectedNote = null;
+  let selectedDayId = null;
   let editingEnabled = false;
 
   function getWeatherDescription(code) {
@@ -54,23 +57,27 @@ document.addEventListener("DOMContentLoaded", () => {
     noteTextArea.value = note.note_text || "";
 
     modalNoteTitle.readOnly = true;
-    modalIconInput.readOnly = true;
+    modalIconInput.disabled = true;
     noteTextArea.readOnly = true;
+
+    if (deleteNoteBtn) deleteNoteBtn.style.display = "inline-block";
 
     noteModal.classList.remove("hidden");
   }
 
-  function closeModal() {
-    if (!noteModal || !modalNoteTitle || !modalIconInput || !noteTextArea) return;
+   function closeModal() {
+   if (!noteModal || !modalNoteTitle || !modalIconInput || !noteTextArea) return;
 
-    noteModal.classList.add("hidden");
-    selectedNote = null;
-    editingEnabled = false;
+   noteModal.classList.add("hidden");
+   selectedNote = null;
+   editingEnabled = false;
 
-    modalNoteTitle.readOnly = true;
-    modalIconInput.readOnly = true;
-    noteTextArea.readOnly = true;
-  }
+   modalNoteTitle.readOnly = true;
+   modalIconInput.disabled = true;
+   noteTextArea.readOnly = true;
+
+   if (deleteNoteBtn) deleteNoteBtn.style.display = "none";
+}
 
   function renderNotes(notes) {
     if (!notes || notes.length === 0) {
@@ -101,6 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const state = button.dataset.state;
     const country = button.dataset.country;
     const date = button.dataset.date;
+    selectedDayId = button.dataset.dayId;
 
     let weatherData = {};
     let notes = [];
@@ -139,52 +147,121 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  if (editNoteBtn) {
-    editNoteBtn.addEventListener("click", () => {
-      editingEnabled = !editingEnabled;
+ if (addNoteBtn) {
+  addNoteBtn.addEventListener("click", () => {
+    if (!selectedDayId) {
+      alert("Please select a favorite day first.");
+      return;
+    }
 
-      if (modalNoteTitle) modalNoteTitle.readOnly = !editingEnabled;
-      if (modalIconInput) modalIconInput.readOnly = !editingEnabled;
-      if (noteTextArea) noteTextArea.readOnly = !editingEnabled;
+    selectedNote = null;
+    editingEnabled = true;
 
-      if (editingEnabled && modalNoteTitle) {
-        modalNoteTitle.focus();
-      }
-    });
-  }
+    modalNoteTitle.value = "";
+    modalIconInput.value = "";
+    noteTextArea.value = "";
+
+    modalNoteTitle.readOnly = false;
+    modalIconInput.disabled = false;
+    noteTextArea.readOnly = false;
+
+   if (deleteNoteBtn) deleteNoteBtn.style.display = "none";
+
+    noteModal.classList.remove("hidden");
+    modalNoteTitle.focus();
+  });
+}
+
+if (editNoteBtn) {
+  editNoteBtn.addEventListener("click", () => {
+    editingEnabled = !editingEnabled;
+
+    if (modalNoteTitle) modalNoteTitle.readOnly = !editingEnabled;
+    if (modalIconInput) modalIconInput.disabled = !editingEnabled;
+    if (noteTextArea) noteTextArea.readOnly = !editingEnabled;
+
+    if (editingEnabled && modalNoteTitle) {
+      modalNoteTitle.focus();
+    }
+  });
+}
 
   if (saveNoteBtn) {
-    saveNoteBtn.addEventListener("click", async () => {
-      if (!selectedNote) return;
+  saveNoteBtn.addEventListener("click", async () => {
+    try {
+      let url = "/notes/update";
+      let payload = {
+        note_title: modalNoteTitle.value,
+        icon_path: modalIconInput.value,
+        note_text: noteTextArea.value
+      };
 
-      try {
-        const response = await fetch("/notes/update", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            note_id: selectedNote.note_id,
-            note_title: modalNoteTitle.value,
-            icon_path: modalIconInput.value,
-            note_text: noteTextArea.value
-          })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          alert("Note updated successfully.");
-          window.location.reload();
-        } else {
-          alert("Could not update note.");
-        }
-      } catch (error) {
-        console.error("Error updating note:", error);
-        alert("Error updating note.");
+      if (selectedNote) {
+        payload.note_id = selectedNote.note_id;
+      } else {
+        url = "/notes/add";
+        payload.day_id = selectedDayId;
       }
-    });
-  }
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert(selectedNote ? "Note updated successfully." : "Note added successfully.");
+        window.location.reload();
+      } else {
+        alert("Could not save note.");
+      }
+    } catch (error) {
+      console.error("Error saving note:", error);
+      alert("Error saving note.");
+    }
+  });
+}
+
+if (deleteNoteBtn) {
+  deleteNoteBtn.addEventListener("click", async () => {
+    if (!selectedNote || !selectedNote.note_id) {
+      alert("No note selected to delete.");
+      return;
+    }
+
+    const confirmed = confirm("Are you sure you want to delete this note?");
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch("/notes/delete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          note_id: selectedNote.note_id
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert("Note deleted successfully.");
+        closeModal();
+        window.location.reload();
+      } else {
+        alert("Could not delete note.");
+      }
+    } catch (error) {
+      console.error("Error deleting note:", error);
+      alert("Error deleting note.");
+    }
+  });
+}
 
   if (cancelNoteBtn) {
     cancelNoteBtn.addEventListener("click", closeModal);
