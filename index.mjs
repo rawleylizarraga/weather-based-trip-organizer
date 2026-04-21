@@ -215,10 +215,10 @@ app.get('/logout', isAuthenticated, (req, res) => {
 // preferences get route
 app.get('/preferences', isAuthenticated, async (req, res) => {
     const profilePictures = [
-        'https://cdn.pixabay.com/photo/2016/07/17/18/51/mexico-1524499_1280.png',
-        'https://cdn.pixabay.com/photo/2016/07/17/18/44/england-1524478_1280.png',
-        'https://cdn.pixabay.com/photo/2016/07/17/18/20/united-states-1524403_1280.png',
-        'https://cdn.pixabay.com/photo/2016/07/17/18/26/france-1524418_1280.png'
+        'profilepic1.png',
+        'profilepic2.png',
+        'profilepic3.png',
+        'profilepic4.png'
     ];
 
     let user = await getUserById(req.session.userId);

@@ -14,7 +14,7 @@
     <% profilePictures.forEach(pic => { %>
       <label class="text-center">
         <input type="radio" name="profilePic" value="<%= pic %>" <%= currentProfilePic === pic ? "checked" : "" %>>
-        <img src="<%= pic %>" class="avatar rounded border">
+        <img src="/img/<%= pic %>" class="avatar rounded border">
       </label>
     <% }) %>
   </div>
