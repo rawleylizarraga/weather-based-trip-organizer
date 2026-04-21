@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather-Based Trip Organizer</title>
+</head>
+<body>
+
+<div class="home-container">
+
+    <%- include("partials/head.ejs") %>
+    <!-- PAGE TITLE -->
+    <h1>Weather-Based Trip Organizer</h1>
+
+    
+    <!-- TOP BUTTONS -->
+    <div class="top-buttons">
+
+        <!-- Favorites Page -->
+        <a href="/favorites">
+            <button class="top-btn">Favorites</button>
+        </a>
+
+        <!-- Login / Logout -->
+        <% if (authenticated) { %>
+            <a href="/logout">
+                <button class="top-btn">Logout</button>
+            </a>
+        <% } else { %>
+            <a href="/login">
+                <button class="top-btn">Login</button>
+            </a>
+        <% } %>
+
+    </div>
+
+    <!-- MAIN PAGE -->
+    <div class="main-content">
+
+        <!-- LEFT AREA -->
+        <div class="left-area">
+
+            <!-- COUNTRY -->
+            <select id="countryDropdown">
+                <option value="">Country Dropdown</option>
+            </select>
+
+            <!-- STATE -->
+            <select id="stateDropdown">
+                <option value="">State Dropdown</option>
+            </select>
+
+            <!-- CITY -->
+            <select id="cityDropdown">
+                <option value="">City Dropdown</option>
+            </select>
+
+            <!-- DAY / RANGE BUTTONS -->
+            <div class="day-range-row">
+                <button type="button" class="small-btn" id="dayBtn">Day</button>
+                <button type="button" class="small-btn" id="rangeBtn">Range</button>
+            </div>
+
+            <!-- DAY INPUT -->
+            <input type="date" id="dayInput">
+
+            <!-- RANGE INPUT (hidden initially) -->
+            <input type="number" id="rangeInput" placeholder="Range (days)" min="1" max="7" style="display:none;">
+
+            <!-- SUBMIT -->
+            <button type="button" id="submitBtn">Get Weather</button>
+
+        </div>
+
+        <!-- RIGHT AREA -->
+        <div class="right-area">
+
+            <div class="weather-box">
+
+                <!-- WEATHER OUTPUT -->
+                <div class="weather-output" id="weatherOutput">
+                    Select a location to view weather
+                </div>
+
+                <!-- NAVIGATION -->
+                <div class="weather-nav">
+                    <button type="button" class="nav-btn" id="prevBtn">Prev</button>
+                    <span id="weatherPageCount">1/1</span>
+                    <button type="button" class="nav-btn" id="nextBtn">Next</button>
+                </div>
+
+            </div>
+
+            <!-- FAVORITES BUTTON FORM -->
+
+            <form method="POST" action="/favorites/add" id="favoriteForm"> 
+                <input type="hidden" name="country_name" id="fav_country">
+                <input type="hidden" name="state_name" id="fav_state">
+                <input type="hidden" name="city_name" id="fav_city">
+                <input type="hidden" name="longitude" id="fav_longitude">
+                <input type="hidden" name="latitude" id="fav_latitude">
+                <input type="hidden" name="weather_data" id="fav_weather">
+                <input type="hidden" name="day_date" id="fav_date">
+
+                <button type="submit" id="favoriteBtn">Add to Favorites</button>
+                <p id="favoriteMessage" class="favorite-message"></p>
+            </form>
+           
+
+        </div>
+
+    </div>
+
+</div>
+
+<%- include("partials/footer.ejs") %>
+
+<script>
+    window.tempUnit = "<%= tempUnit || 'F' %>";
+</script>
+
+<script src="/js/script.js"></script>
+
+</body>
+</html>

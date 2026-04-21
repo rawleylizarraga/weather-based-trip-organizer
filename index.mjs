@@ -3,6 +3,10 @@ import mysql from 'mysql2/promise';
 import bcrypt from 'bcrypt';
 import session from 'express-session';
 
+import pkg from 'country-state-city';
+const { Country, State, City } = pkg;
+
+
 const app = express();
 // bcrypt hashing rounds
 const saltRounds = 10;
@@ -16,6 +20,7 @@ app.use(express.static('public'));
 
 //for Express to get values using POST method
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // express-session settings
 app.set('trust proxy', 1);
@@ -36,8 +41,74 @@ const pool = mysql.createPool({
 });
 
 //routes
+//home/index page
 app.get('/', (req, res) => {
-    res.send('Hello Express app!')
+    res.render("index", {
+        authenticated: req.session.authenticated,
+        tempUnit: req.session.tempUnit || "F"
+    });
+});
+
+//api get countries
+app.get("/api/countries", (req, res) => {
+    let countries = Country.getAllCountries();
+    res.send(countries);
+});
+
+//api get states
+app.get("/api/states/:countryCode", (req, res) => {
+    let countryCode = req.params.countryCode;
+    let states = State.getStatesOfCountry(countryCode);
+    res.send(states);
+});
+
+//api get cities
+app.get("/api/cities/:countryCode/:stateCode", (req, res) => {
+    let countryCode = req.params.countryCode;
+    let stateCode = req.params.stateCode;
+    let cities = City.getCitiesOfState(countryCode, stateCode);
+    res.send(cities);
+});
+
+// api get weather from Open-Meteo
+app.get("/api/weather", async (req, res) => {
+    let latitude = req.query.latitude;
+    let longitude = req.query.longitude;
+
+    let url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=auto`;
+
+    let response = await fetch(url);
+    let data = await response.json();
+
+    res.send(data);
+});
+
+//post add favorite day
+app.post("/favorites/add", async (req, res) => {
+    if (!req.session.authenticated) {
+        return res.redirect("/login");
+    }
+
+    let country_name = req.body.country_name;
+    let state_name = req.body.state_name;
+    let city_name = req.body.city_name;
+    let longitude = req.body.longitude;
+    let latitude = req.body.latitude;
+    let weather_data = req.body.weather_data;
+    let day_date = req.body.day_date;
+
+     await addFavDay(
+      req.session.userId,
+      country_name,
+      state_name,
+      city_name,
+      longitude,
+      latitude,
+      weather_data,
+      day_date
+    );
+    res.redirect("/favorites");
+
 });
 
 // login page
@@ -177,6 +248,56 @@ app.get("/dbTest", async (req, res) => {
         res.status(500).send("Database error");
     }
 });//dbTest
+
+
+//favorites route
+app.get("/favorites", async (req, res) => {
+  try {
+     const userId = req.session.userId || 2;
+
+    // use your helper function 
+    let favorites = await getFavDaysByUserId(userId);
+
+    // attach notes to each favorite
+    for (let fav of favorites) {
+      let notes = await getNotesByDay(fav.day_id);
+      fav.notes = notes;
+
+      if (typeof fav.weather_data === "string") {
+        try {
+          fav.weather_data = JSON.parse(fav.weather_data);
+        } catch {
+          fav.weather_data = {};
+        }
+      }
+    }
+
+    res.render("favorites", { favorites });
+
+  } catch (error) {
+    console.error(error);
+    res.send("Error loading favorites");
+  }
+});
+
+//update notes route
+app.post("/notes/update", async (req, res) => {
+  try {
+    const { note_id, note_text, icon_path, note_title } = req.body;
+
+    const success = await updateNote(
+      note_text,
+      icon_path,
+      note_title,
+      note_id
+    );
+
+    res.json({ success });
+  } catch (error) {
+    console.error("Note update error:", error);
+    res.json({ success: false });
+  }
+});
 
 app.listen(3000, () => {
     console.log("Express server running")
