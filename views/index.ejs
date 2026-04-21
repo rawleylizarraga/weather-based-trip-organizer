@@ -25,6 +25,7 @@
         <!-- Login / Logout -->
         <% if (authenticated) { %>
             <a href="/logout">
+                <img src="/img/<%= profilePicture %>" alt="Profile Picture" class="profile-pic">
                 <button class="top-btn">Logout</button>
             </a>
         <% } else { %>
