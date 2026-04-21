@@ -1,0 +1,23 @@
+body {
+    text-align: center;
+}
+
+main {
+    margin: 20px auto;
+    width: fit-content;
+    border: solid lightgray 1px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 3em 3em 4em 3em;
+    border-radius: 10px;
+
+    line-height: 2em;
+}
+
+nav {
+    margin-top: 30px;
+}
+
+#loginError {
+    color: red;
+    font-size: large;
+}
