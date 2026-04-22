@@ -148,7 +148,7 @@ async function getWeatherData() {
         let foundDay = allWeatherDays.find(day => day.date == chosenDay);
 
         if (!foundDay) {
-            weatherOutput.innerHTML = "That date is not available in the forecast.";
+            weatherOutput.innerHTML = "Please select a valid day from today to 6 days in the future.";
             displayedWeatherDays = [];
             updatePageCount();
             return;
