@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const editNoteBtn = document.getElementById("editNoteBtn");
   const saveNoteBtn = document.getElementById("saveNoteBtn");
   const deleteNoteBtn = document.getElementById("deleteNoteBtn");
+  const deleteDayBtn = document.getElementById("deleteDayBtn");
   const cancelNoteBtn = document.getElementById("cancelNoteBtn");
   const addNoteBtn = document.getElementById("addNoteBtn");
 
@@ -113,6 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const country = button.dataset.country;
     const date = button.dataset.date;
     selectedDayId = button.dataset.dayId;
+    console.log(selectedDayId);
 
     let weatherData = {};
     let notes = [];
@@ -299,4 +301,44 @@ if (deleteNoteBtn) {
       displayFavorite(lastButton);
     }
   }
+
+
+  if (deleteDayBtn) {
+  deleteDayBtn.addEventListener("click", async () => {
+    console.log(selectedDayId);
+    if (!selectedDayId) {
+      alert("Please select a favorite day first.");
+      return;
+    }
+
+    const confirmed = confirm("Are you sure you want to delete this day?");
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(`/day/delete`, {
+      method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          dayId: selectedDayId
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert("Day deleted successfully.");
+        closeModal();
+        window.location.reload();
+      } else {
+        alert("Could not delete day.");
+      }
+    } catch (error) {
+      console.error("Error deleting day:", error);
+      alert("Error deleting day.");
+    }
+  });
+}
 });
+
