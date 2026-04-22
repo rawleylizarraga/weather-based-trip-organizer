@@ -135,8 +135,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const current = weatherData.current || {};
 
+  let temperature = current.temperature_2m;
+  let tempUnit = window.tempUnit || "F";
+
+
+  if (temperature !== undefined && tempUnit === "F") 
+  {
+    temperature = (temperature * 9/5) + 32;
+    temperature = temperature.toFixed(1);
+  } else if (temperature !== undefined && tempUnit === "C") 
+  {
+      temperature = Number(temperature).toFixed(1);
+  }
+
     weatherOutput.innerHTML = `
-      <p><strong>Temperature:</strong> ${current.temperature_2m ?? "N/A"}°</p>
+      <p><strong>Temperature:</strong> ${temperature ?? "N/A"}°</p>
       <p><strong>Wind Speed:</strong> ${current.wind_speed_10m ?? "N/A"}mph</p>
       <p><strong>Weather:</strong> ${getWeatherDescription(current.weather_code)}</p>
     `;

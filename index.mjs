@@ -296,7 +296,7 @@ try {
       }
     }
 
-    res.render("favorites", { favorites });
+    res.render("favorites", { favorites, tempUnit: req.session.tempUnit || "F" });
 
   } catch (error) {
     console.error(error);
