@@ -150,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     weatherOutput.innerHTML = `
       <p><strong>Temperature:</strong> ${temperature ?? "N/A"}°</p>
-      <p><strong>Wind Speed:</strong> ${current.wind_speed_10m ?? "N/A"}</p>
+      <p><strong>Wind Speed:</strong> ${current.wind_speed_10m ?? "N/A"}mph</p>
       <p><strong>Weather:</strong> ${getWeatherDescription(current.weather_code)}</p>
     `;
 
