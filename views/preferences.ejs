@@ -1,14 +1,20 @@
 <%- include("partials/head.ejs") %>
 
 <body class="bg-light">
+
     <div class="container py-5">
     <div class="card shadow-sm">
     <div class="card-body">
     <h1 class="mb-4 text-center">Preferences</h1>
 
+    <div class="d-flex gap-2 mb-4">
+        <a href="/" class="btn btn-outline-primary btn-sm">Home</a>
+        <a href="/favorites" class="btn btn-outline-primary btn-sm">Favorites</a>
+    </div>
+
     <form method="POST" action="/preferences">
 <div class="mb-4">
-  <h5 class="mb-3">Preferred profile picture</h5>
+  <h5 class="mb-3">Preferred Profile Picture</h5>
 
   <div class="d-flex flex-wrap gap-3">
     <% profilePictures.forEach(pic => { %>
@@ -21,7 +27,7 @@
 </div>
 
         <div>
-            <h5 class="mb-3">Preferred temperature unit</h5>
+            <h5 class="mb-3">Preferred Temperature Uni</h5>
             <span>F°</span>
             <label class="switch">
                 <input type="checkbox" name="tempUnit" value="C" <%= currentTempUnit === "C" ? "checked" : "" %>>
