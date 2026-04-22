@@ -6,6 +6,11 @@
     <div class="card shadow-sm">
     <div class="card-body">
     <h1 class="mb-4 text-center">Preferences</h1>
+    <% if (success) { %>
+    <div class="alert alert-success text-center">
+        Preferences updated successfully!
+    </div>
+    <% } %>
 
     <div class="d-flex gap-2 mb-4">
         <a href="/" class="btn btn-outline-primary btn-sm">Home</a>
@@ -27,7 +32,7 @@
 </div>
 
         <div>
-            <h5 class="mb-3">Preferred Temperature Uni</h5>
+            <h5 class="mb-3">Preferred Temperature Unit</h5>
             <span>F°</span>
             <label class="switch">
                 <input type="checkbox" name="tempUnit" value="C" <%= currentTempUnit === "C" ? "checked" : "" %>>
@@ -42,5 +47,11 @@
     </div>
     </div>
     <%- include("partials/footer.ejs") %>
+    <script>
+    setTimeout(() => {
+        const alert = document.querySelector('.alert');
+        if (alert) alert.remove();
+    }, 3000);
+    </script>
 </body>
 </html>
