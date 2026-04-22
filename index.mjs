@@ -238,10 +238,13 @@ app.get('/preferences', isAuthenticated, async (req, res) => {
 
     let user = await getUserById(req.session.userId);
 
+    let success = req.query.success || null;
+
     res.render('preferences', {
         profilePictures,
         currentTempUnit: user.temp_unit,
-        currentProfilePic: user.profile_picture_path
+        currentProfilePic: user.profile_picture_path,
+        success
     });
 });
 
@@ -260,7 +263,7 @@ app.post('/preferences', isAuthenticated, async (req, res) => {
     req.session.profilePicturePath = profilePic;
     req.session.tempUnit = tempUnit;
 
-    res.redirect('/preferences');
+    res.redirect('/preferences?success=1');
 });
 
 app.get("/dbTest", async (req, res) => {
