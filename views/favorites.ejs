@@ -5,106 +5,133 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Favorites</title>
   <link rel="stylesheet" href="/css/favstyles.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
+<div class="container py-5">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h1 class="mb-4 text-center">Favorites</h1>
 
-  <div class="favorites-container">
-    <h1>Favorites</h1>
-
-<div class="favorites-top-buttons">
-  <a href="/" class="nav-btn">home button</a>
-  <a href="/preferences" class="nav-btn">preferences</a>
-  <a href="/login" class="nav-btn">login/logout</a>
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="d-flex gap-2">
+    <a href="/" class="btn btn-outline-primary btn-sm">Home</a>
+    <a href="/preferences" class="btn btn-outline-primary btn-sm">Preferences</a>
+  </div>
+  <a href="/login" class="btn btn-primary btn-sm">Login / Logout</a>
 </div>
 
-    <div class="favorites-layout">
+    <div class="row g-4">
 
-      <aside class="favorites-sidebar">
-        <p class="sidebar-label">list of favorite days</p>
+      <aside class="col-md-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="mb-3">Favorite Days</h5>
 
-        <% if (favorites.length > 0) { %>
-          <% favorites.forEach(fav => { %>
-            <button
-              class="favorite-day-btn"
-              data-day-id="<%= fav.day_id %>"
-              data-city="<%= fav.city_name %>"
-              data-state="<%= fav.state_name %>"
-              data-country="<%= fav.country_name %>"
-              data-date="<%= fav.day_date %>"
-              data-weather='<%- JSON.stringify(fav.weather_data || {}) %>'
-              data-notes='<%- JSON.stringify(fav.notes || []) %>'>
-              <strong><%= fav.city_name %></strong><br>
-              <span><%= new Date(fav.day_date).toLocaleDateString() %></span>
-            </button>
-          <% }) %>
-        <% } else { %>
-          <p>No favorite days yet.</p>
-        <% } %>
+            <% if (favorites.length > 0) { %>
+              <% favorites.forEach(fav => { %>
+                <button
+                  class="favorite-day-btn btn btn-outline-secondary w-100 text-start mb-2"
+                  data-day-id="<%= fav.day_id %>"
+                  data-city="<%= fav.city_name %>"
+                  data-state="<%= fav.state_name %>"
+                  data-country="<%= fav.country_name %>"
+                  data-date="<%= fav.day_date %>"
+                  data-weather='<%- JSON.stringify(fav.weather_data || {}) %>'
+                  data-notes='<%- JSON.stringify(fav.notes || []) %>'>
+                  <strong><%= fav.city_name %></strong><br>
+                  <span><%= new Date(fav.day_date).toLocaleDateString() %></span>
+                </button>
+              <% }) %>
+            <% } else { %>
+              <p class="text-muted mb-0">No favorite days yet.</p>
+            <% } %>
+          </div>
+        </div>
       </aside>
 
-      <section class="favorites-details">
-        <div id="favoriteInfo" class="favorite-info-box">
-          <p id="detailsTitle">favorite info - weather output</p>
+      <section class="col-md-8">
+        <div id="favoriteInfo" class="card">
+          <div class="card-body">
+            <h5 id="detailsTitle" class="mb-3">favorite info - weather output</h5>
 
-          <div id="weatherOutput" class="weather-output">
+          <div id="weatherOutput" class="weather-output mb-4">
             Select a favorite day to view saved weather.
           </div>
 
-     <div class="notes-box">
-      <div class="notes-header">
-        <p>attached notes</p>
-        <button id="addNoteBtn" class="small-btn" type="button">+ Add Note</button>
-      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0">Attached Notes</h6>
+            <button id="addNoteBtn" class="btn btn-outline-secondary btn-sm" type="button">+ Add Note</button>
+          </div>
 
       <div id="notesOutput">
         No notes selected yet.
       </div>
-    </div>
-  </div>
+    </div> 
+  </div> 
+
+  </div> 
+</div> 
 </section>
 
-    </div>
-  </div>
+</div> 
+</div> 
+</div> 
+</div> 
 
 <!-- Note Popup Modal -->
-<div id="noteModal" class="modal hidden">
-  <div class="modal-content">
-    <h2>note popup modal</h2>
+<div id="noteModal" class="custom-modal hidden">
+  <div class="bg-white p-4 rounded shadow" style="width: 100%; max-width: 500px;">
 
-    <label for="modalNoteTitle"><strong>note title</strong></label>
-    <input type="text" id="modalNoteTitle" class="modal-input" readonly>
+    <h4 class="mb-4 text-center">Note Details</h4>
 
-    <div class="modal-top">
-      <div class="icon-section">
-  <label for="modalIconInput"><strong>icon</strong></label>
 
-  <select id="modalIconInput" class="modal-input" disabled>
-    <option value="">Select icon</option>
-    <option value="☀️">☀️ Sunny</option>
-    <option value="🌧️">🌧️ Rain</option>
-    <option value="🍽️">🍽️ Food</option>
-    <option value="✈️">✈️ Travel</option>
-    <option value="🏖️">🏖️ Beach</option>
-    <option value="☕">☕ Coffee</option>
-  </select>
-</div>
-
-      <button id="editNoteBtn" class="small-btn" type="button">edit note button</button>
+    <div class="mb-3">
+      <label for="modalNoteTitle" class="form-label"><strong>Note Title</strong></label>
+      <input type="text" id="modalNoteTitle" class="form-control" readonly>
     </div>
 
-    <div class="modal-body">
-      <label for="noteTextArea"><strong>note description</strong></label>
-      <textarea id="noteTextArea" readonly></textarea>
+
+    <div class="d-flex justify-content-between align-items-end mb-3 gap-2">
+
+      <div class="flex-grow-1">
+        <label for="modalIconInput" class="form-label"><strong>Icon</strong></label>
+        <select id="modalIconInput" class="form-select" disabled>
+          <option value="">Select icon</option>
+          <option value="☀️">☀️ Sunny</option>
+          <option value="🌧️">🌧️ Rain</option>
+          <option value="🍽️">🍽️ Food</option>
+          <option value="✈️">✈️ Travel</option>
+          <option value="🏖️">🏖️ Beach</option>
+          <option value="☕">☕ Coffee</option>
+        </select>
+      </div>
+
+      <button id="editNoteBtn" class="btn btn-primary btn-sm" type="button">
+        Edit
+      </button>
+
     </div>
 
-    <div class="modal-actions">
-      <button id="saveNoteBtn" class="small-btn" type="button">submit btn</button>
-      <button id="deleteNoteBtn" class="small-btn" type="button">delete btn</button>
-      <button id="cancelNoteBtn" class="small-btn" type="button">cancel btn</button>
+
+    <div class="mb-3">
+      <label for="noteTextArea" class="form-label"><strong>Description</strong></label>
+      <textarea id="noteTextArea" class="form-control" rows="4" readonly></textarea>
     </div>
+
+ 
+    <div class="d-flex justify-content-between mt-3">
+      <button id="saveNoteBtn" class="btn btn-success btn-sm" type="button">Save</button>
+      <button id="deleteNoteBtn" class="btn btn-danger btn-sm" type="button">Delete</button>
+      <button id="cancelNoteBtn" class="btn btn-secondary btn-sm" type="button">Cancel</button>
+    </div>
+
   </div>
 </div>
-
+    <%- include("partials/footer.ejs") %>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/js/favorites.js"></script>
 </body>
 </html>

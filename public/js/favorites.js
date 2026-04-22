@@ -81,16 +81,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function renderNotes(notes) {
     if (!notes || notes.length === 0) {
-      notesOutput.innerHTML = `<p>No notes attached to this favorite day.</p>`;
+      notesOutput.innerHTML = `<p class="text-muted mb-0">No notes attached to this favorite day.</p>`;
       return;
     }
 
     notesOutput.innerHTML = notes.map((note, index) => `
-      <div class="note-card">
-        <h4>${note.note_title || "Untitled Note"}</h4>
-        <p>${note.note_text || ""}</p>
-        <p><strong>Icon:</strong> ${note.icon_path || "None"}</p>
-        <button class="open-note-btn" data-note-index="${index}">Open Note</button>
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-2">${note.note_title || "Untitled Note"}</h5>
+          <p class="card-text mb-2">${note.note_text || ""}</p>
+          <p class="mb-3"><strong>Icon:</strong> ${note.icon_path || "None"}</p>
+          <button class="open-note-btn btn btn-outline-primary btn-sm" data-note-index="${index}">
+            Open Note
+          </button>
+        </div>
       </div>
     `).join("");
 
