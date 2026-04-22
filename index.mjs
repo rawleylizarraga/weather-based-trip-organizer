@@ -349,6 +349,19 @@ app.post("/notes/delete", async (req, res) => {
   }
 });
 
+//delete day
+app.post("/day/delete", async (req, res) => {
+  try {
+    const day_id = req.body.dayId;
+    console.log(day_id);
+    const success = await deleteFavDay(day_id);
+    res.json({ success });
+  } catch (err) {
+    console.error("Delete error:", err);
+    res.json({ success: false });
+  }
+});
+
 app.listen(3000, () => {
     console.log("Express server running")
 })
