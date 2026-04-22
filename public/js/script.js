@@ -148,7 +148,7 @@ async function getWeatherData() {
         let foundDay = allWeatherDays.find(day => day.date == chosenDay);
 
         if (!foundDay) {
-            weatherOutput.innerHTML = "That date is not available in the forecast.";
+            weatherOutput.innerHTML = "Please select a valid day from today to 6 days in the future.";
             displayedWeatherDays = [];
             updatePageCount();
             return;
@@ -160,8 +160,8 @@ async function getWeatherData() {
     } else {
         let rangeValue = Number(document.querySelector("#rangeInput").value);
 
-        if (!rangeValue || rangeValue < 1 || rangeValue > 16) {
-            weatherOutput.innerHTML = "Please enter a range between 1 and 16 days.";
+        if (!rangeValue || rangeValue < 1 || rangeValue > 7) {
+            weatherOutput.innerHTML = "Please enter a range between 1 and 7 days.";
             displayedWeatherDays = [];
             updatePageCount();
             return;
