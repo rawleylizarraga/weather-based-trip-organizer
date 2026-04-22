@@ -160,8 +160,8 @@ async function getWeatherData() {
     } else {
         let rangeValue = Number(document.querySelector("#rangeInput").value);
 
-        if (!rangeValue || rangeValue < 1 || rangeValue > 7) {
-            weatherOutput.innerHTML = "Please enter a range between 1 and 7 days.";
+        if (!rangeValue || rangeValue < 1 || rangeValue > 16) {
+            weatherOutput.innerHTML = "Please enter a range between 1 and 16 days.";
             displayedWeatherDays = [];
             updatePageCount();
             return;
